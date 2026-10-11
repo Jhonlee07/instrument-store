@@ -1,0 +1,67 @@
+services:
+  db:
+    build: ./db
+    image: store-db:${TAG:-latest}
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
+      MYSQL_DATABASE: ${DB_NAME:-instrument_store}
+      MYSQL_USER: ${DB_USER:-store_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-store_pass}
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - store-net
+    # No "ports": the database is reachable only from the internal bridge network.
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+  backend:
+    build:
+      context: ./backend
+      target: production
+    image: store-backend:${TAG:-latest}
+    restart: unless-stopped
+    environment:
+      PORT: 3000
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME:-instrument_store}
+      DB_USER: ${DB_USER:-store_user}
+      DB_PASSWORD: ${DB_PASSWORD:-store_pass}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - store-net
+
+  frontend:
+    build: ./frontend
+    image: store-frontend:${TAG:-latest}
+    restart: unless-stopped
+    networks:
+      - store-net
+
+  proxy:
+    build: ./proxy
+    image: store-proxy:${TAG:-latest}
+    restart: unless-stopped
+    depends_on:
+      - frontend
+      - backend
+    ports:
+      - "8080:80"   # single public entry point
+    networks:
+      - store-net
+
+networks:
+  store-net:
+    driver: bridge
+
+volumes:
+  db-data:
+    name: db-data
