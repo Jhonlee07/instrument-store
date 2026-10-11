@@ -38,11 +38,11 @@ pipeline {
 
    stage('Smoke Test') {
     steps {
-        // Hit the public entry point (proxy) from inside the compose network
+        // Hit the backend health endpoint directly from inside the compose network
         sh '''
             sleep 5
             for i in $(seq 1 30); do
-                if docker compose exec -T proxy wget -q -O /dev/null http://localhost/api/health; then
+                if docker compose exec -T backend wget -q -O /dev/null http://localhost:3000/api/health; then
                     echo "Smoke test passed: GET /api/health -> 200"
                     exit 0
                 fi
