@@ -36,23 +36,24 @@ pipeline {
       }
     }
 
-    stage('Smoke Test') {
-      steps {
-        // Hit the public entry point (proxy) from inside the compose network.
+   stage('Smoke Test') {
+    steps {
+        // Hit the public entry point (proxy) from inside the compose network
         sh '''
-          for i in $(seq 1 30); do
-            if docker compose exec -T proxy wget -q -O /dev/null http://localhost/api/health; then
-              echo "Smoke test passed: GET /api/health -> 200"
-              exit 0
-            fi
-            sleep 2
-          done
-          echo "Smoke test failed"
-          docker compose logs --tail=50
-          exit 1
+            sleep 5
+            for i in $(seq 1 30); do
+                if docker compose exec -T proxy wget -q -O /dev/null http://localhost/api/health; then
+                    echo "Smoke test passed: GET /api/health -> 200"
+                    exit 0
+                fi
+                sleep 2
+            done
+            echo "Smoke test failed"
+            docker compose logs --tail=50
+            exit 1
         '''
-      }
     }
+}
   }
 
   post {
