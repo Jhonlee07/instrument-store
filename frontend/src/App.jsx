@@ -3,7 +3,7 @@ import { addToCart, removeFromCart, cartTotal, cartCount } from './cart.js';
 
 const money = (n) => `$${Number(n).toFixed(2)}`;
 const FALLBACK = 'data:image/svg+xml;utf8,' + encodeURIComponent(
-  '<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400"><rect width="100%" height="100%" fill="#e2e8f0"/><text x="50%" y="50%" font-size="64" text-anchor="middle" dominant-baseline="middle">🎵</text></svg>'
+  '<svg xmlns="http://www.w3.org/2000/svg" width="600" height="450"><rect width="100%" height="100%" fill="#eeeeee"/><text x="50%" y="50%" font-size="24" font-family="Helvetica,Arial" text-anchor="middle" dominant-baseline="middle" fill="#999">No image</text></svg>'
 );
 
 export default function App() {
@@ -55,64 +55,71 @@ export default function App() {
   return (
     <>
       <header className="header">
-        <h1>🎸 SoundStage</h1>
-        <button className="btn cart-btn" onClick={() => setCartOpen(true)}>
-          Cart ({cartCount(cart)})
+        <h1 className="logo">Intone<span>.</span></h1>
+        <span className="meta">Musical Instruments — Est. 2026</span>
+        <button className="cart-btn" onClick={() => setCartOpen(true)}>
+          Cart <span className="count">{String(cartCount(cart)).padStart(2, '0')}</span>
         </button>
       </header>
 
       <main className="container">
         <section className="hero">
-          <h2>Find your sound</h2>
-          <p>Guitars, keyboards, drums and brass — ready to ship.</p>
+          <h2>Build your<br />sound.</h2>
+          <p>Guitars, keyboards, drums and brass. Carefully selected, ready to ship.</p>
         </section>
 
         {status && <div className={`banner ${status.type}`}>{status.text}</div>}
 
         <nav className="filters">
           {categories.map((c) => (
-            <button key={c} className={`chip ${c === category ? 'active' : ''}`} onClick={() => setCategory(c)}>
+            <button key={c} className={`filter ${c === category ? 'active' : ''}`} onClick={() => setCategory(c)}>
               {c}
             </button>
           ))}
         </nav>
 
         {loading ? (
-          <p>Loading…</p>
+          <p className="meta">Loading…</p>
         ) : (
           <div className="grid">
-            {visible.map((p) => (
+            {visible.map((p, i) => (
               <article className="card" key={p.id}>
-                <img src={p.image_url} alt={p.name} onError={(e) => { e.currentTarget.src = FALLBACK; }} />
-                <div className="card-body">
-                  <span className="tag">{p.category}</span>
-                  <h3>{p.name}</h3>
-                  <div className="row">
-                    <strong>{money(p.price)}</strong>
-                    <small>{p.stock > 0 ? `${p.stock} in stock` : 'Out of stock'}</small>
-                  </div>
-                  <button
-                    className="btn"
-                    disabled={p.stock === 0 || (cart[p.id]?.quantity ?? 0) >= p.stock}
-                    onClick={() => setCart((c) => addToCart(c, p))}
-                  >
-                    Add to cart
-                  </button>
+                <div className="card-top">
+                  <span className="num">{String(i + 1).padStart(2, '0')}</span>
+                  <span className="meta">{p.category}</span>
                 </div>
+                <img src={p.image_url} alt={p.name} onError={(e) => { e.currentTarget.src = FALLBACK; }} />
+                <h3>{p.name}</h3>
+                <div className="card-bottom">
+                  <strong>{money(p.price)}</strong>
+                  <span className="meta">{p.stock > 0 ? `${p.stock} in stock` : 'Sold out'}</span>
+                </div>
+                <button
+                  className="add"
+                  disabled={p.stock === 0 || (cart[p.id]?.quantity ?? 0) >= p.stock}
+                  onClick={() => setCart((c) => addToCart(c, p))}
+                >
+                  Add to cart +
+                </button>
               </article>
             ))}
           </div>
         )}
       </main>
 
+      <footer className="footer">
+        <span>Intone</span>
+        <span className="meta">Guitars / Keyboards / Drums / Brass</span>
+      </footer>
+
       {cartOpen && <div className="overlay" onClick={() => setCartOpen(false)} />}
       <aside className={`drawer ${cartOpen ? 'open' : ''}`}>
-        <div className="row">
-          <h2>Your cart</h2>
-          <button className="link" onClick={() => setCartOpen(false)}>Close</button>
+        <div className="drawer-head">
+          <h2>Cart</h2>
+          <button className="link" onClick={() => setCartOpen(false)}>Close ×</button>
         </div>
         {items.length === 0 ? (
-          <p>Your cart is empty.</p>
+          <p className="meta">Your cart is empty.</p>
         ) : (
           <form onSubmit={checkout}>
             <ul className="lines">
@@ -128,9 +135,9 @@ export default function App() {
                 </li>
               ))}
             </ul>
-            <div className="row total"><span>Total</span><strong>{money(cartTotal(cart))}</strong></div>
+            <div className="total"><span className="meta">Total</span><strong>{money(cartTotal(cart))}</strong></div>
             <input required placeholder="Your name" value={name} onChange={(e) => setName(e.target.value)} />
-            <button className="btn full" type="submit">Checkout</button>
+            <button className="checkout" type="submit">Checkout →</button>
           </form>
         )}
       </aside>
