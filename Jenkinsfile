@@ -52,6 +52,8 @@ pipeline {
             docker compose logs --tail=50
             exit 1
         '''
+
+        //Goated test lmao
     }
 }
   }
