@@ -52,8 +52,9 @@ pipeline {
             docker compose logs --tail=50
             exit 1
         '''
+        //test build jenkins
 
-        //test run for jenkins
+        
 
         
 
