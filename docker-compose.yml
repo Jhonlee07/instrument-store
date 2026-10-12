@@ -1,6 +1,6 @@
 services:
   db:
-    build: ./db
+    build: ./database
     image: store-db:${TAG:-latest}
     restart: unless-stopped
     environment:
@@ -12,7 +12,7 @@ services:
       - db-data:/var/lib/mysql
     networks:
       - store-net
-    # No "ports": the database is reachable only from the internal bridge network.
+   
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
       interval: 5s
@@ -54,7 +54,7 @@ services:
       - frontend
       - backend
     ports:
-      - "8080:80"   # single public entry point
+      - "8080:80"   
     networks:
       - store-net
 

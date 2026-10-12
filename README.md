@@ -1,6 +1,6 @@
 # SoundStage — Instrument Store
 
-Four containers on one bridge network (`store-net`): `proxy` (Nginx, the only published port, 8080), `frontend` (React + Nginx), `backend` (Node/Express) and `db` (MySQL 8, named volume `db-data`, not exposed to the host; schema baked into the image from `db/schema.sql`).
+Four containers on one bridge network (`store-net`): `proxy` (Nginx, the only published port, 8080), `frontend` (React + Nginx), `backend` (Node/Express) and `db` (MySQL 8, named volume `db-data`, not exposed to the host; schema baked into the image from `database/schema.sql`).
 
 ## Run
 ```

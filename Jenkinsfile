@@ -53,9 +53,9 @@ pipeline {
             exit 1
         '''
 
-        //Goated test lmao
+        //test
 
-        //Karl wanna test it out
+      
     }
 }
   }
